@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Main {
+
 	
 	private static Scanner s = new Scanner(System.in);
 	
@@ -12,6 +13,7 @@ public class Main {
 		System.out.println("asdadasdsad");
 		System.out.println("hola");
 		
+		System.out.println("uwu owo ");
 		leerPcs();
 		leerPuertos();
 		leerUsuarios();
