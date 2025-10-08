@@ -18,6 +18,42 @@ public class Main {
 		leerPuertos();
 		leerUsuarios();
 		leerVul();
+		
+		int opcion = 0;
+		s = new Scanner(System.in);
+		
+		do {
+			System.out.println("---------Menú---------");
+			System.out.println("1) Menú Admin");
+			System.out.println("2) Menú Usuario");
+			System.out.println("3) Salir");
+			opcion = s.nextInt();
+			s.nextLine();
+			switch (opcion) {
+			case 1:
+				menuAdmin();
+				break;
+			case 2:
+				menuUsuario();
+				break;
+			case 3:
+				System.out.println("Saliendo...");
+			default:
+				System.out.println("Opción no valida, intente de nuevo");
+			}
+			
+			
+		} while (opcion != 3);
+	}
+
+	private static void menuUsuario() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void menuAdmin() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private static void leerVul() throws FileNotFoundException{
@@ -26,7 +62,7 @@ public class Main {
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split("|");
-			System.out.println(linea); //testeo	
+			//System.out.println(linea); //testeo	
 		}
 	}
 
@@ -36,7 +72,7 @@ public class Main {
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split(";");
-			System.out.println(linea); //testeo	
+			//System.out.println(linea); //testeo	
 		}
 	}
 
@@ -46,7 +82,7 @@ public class Main {
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split("|");
-			System.out.println(linea); //testeo		
+			//System.out.println(linea); //testeo		
 		}
 	}
 
@@ -56,7 +92,7 @@ public class Main {
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split("|");
-			System.out.println(linea); //testeo		
+			//System.out.println(linea); //testeo		
 		}	
 	}
 
