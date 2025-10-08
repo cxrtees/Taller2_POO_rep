@@ -10,41 +10,39 @@ public class Main {
 	private static Scanner s = new Scanner(System.in);
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		System.out.println("asdadasdsad");
-		System.out.println("hola");
-		
-		System.out.println("uwu owo ");
-		leerPcs();
-		leerPuertos();
-		leerUsuarios();
-		leerVul();
-		
-		int opcion = 0;
-		s = new Scanner(System.in);
-		
-		do {
-			System.out.println("---------Menú---------");
-			System.out.println("1) Menú Admin");
-			System.out.println("2) Menú Usuario");
-			System.out.println("3) Salir");
-			opcion = s.nextInt();
-			s.nextLine();
-			switch (opcion) {
-			case 1:
-				menuAdmin();
-				break;
-			case 2:
-				menuUsuario();
-				break;
-			case 3:
-				System.out.println("Saliendo...");
-			default:
-				System.out.println("Opción no valida, intente de nuevo");
-			}
-			
-			
-		} while (opcion != 3);
-	}
+		Scanner sc = new Scanner(System.in);
+        boolean logueado = false;
+        String rol = "";
+
+        do {
+            System.out.println("\n=== LOGIN SECURENET ===");
+            System.out.print("Usuario: ");
+            String user = sc.nextLine();
+            System.out.print("Contraseña: ");
+            String pass = sc.nextLine();
+
+            // 🔹 Aquí en vez del if largo, llamas a una función de verificación:
+            rol = verificarUsuario(user, pass);
+
+            if (!rol.equals("")) {
+                logueado = true;
+                System.out.println("Login exitoso como " + rol + "!");
+            } else {
+                System.out.println("Usuario o contraseña incorrecta.\n");
+            }
+
+        } while (!logueado);
+
+        // Menú según el rol
+        if (rol.equals("ADMIN")) {
+            menuAdmin(sc);
+        } else if (rol.equals("USUARIO")) {
+        	
+            menuUsuario(sc);
+        }
+
+        sc.close();
+    }
 
 	private static void menuUsuario() {
 		// TODO Auto-generated method stub
