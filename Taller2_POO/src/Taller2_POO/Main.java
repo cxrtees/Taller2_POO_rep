@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
 
+import wea.PC;
+import wea.Usuario;
+
 
 public class Main {
 
@@ -132,45 +135,71 @@ public static ArrayList<PC> cargarPCs() {
 
 
 
-private static void menuUsuario() {
-	Scanner sc = new Scanner(System.in);
-	int op;
-	
-	do {
-		System.out.println("\n=== MENÚ USUARIO ===");
-		System.out.println("1) Ver lista de PCs");
-		System.out.println("0) Salir");
-		System.out.print("Opción: ");
-		String in = sc.nextLine().trim();
-		if (in.isEmpty()) { op = -1; continue;}
-		
-		try {
-			op = Integer.parseInt(in);
-		} catch (NumberFormatException e) {
-			op = -1;
-		}
-		
-		switch (op) {
-		case 1:
-			ArrayList<PC> pcs = cargarPCs();
-			if (pcs.isEmpty()) {
-				System.out.println("No hay PCs cargados");
-			} else {
-				System.out.println("\n--- LISTA DE PCs ---");
-				for (PC pc : pcs) {
-					System.out.println(pc.toString());
-				}
-			}
-			break;
-		case 0:
-			System.out.println("Saliendo del Menú Usuario...");
-			break;
-		default:
-			System.out.println("Opción no válida");
-		}
-	} while (op != 0);
-}
+//menu de usuario
+private static void menuUsuario(Scanner sc, Usuario usuarioLogueado) {
+ int op;
+ 
+ do {
+     System.out.println("\n=== MENU USUARIO ===");
+     System.out.println("1) Ver lista de PCs");
+     System.out.println("2) Escanear un PC");
+     System.out.println("3) Ver total de puertos abiertos");
+     System.out.println("4) Ordenar PCs por IP");
+     System.out.println("0) Salir");
+     System.out.print("Opcion: ");
+     
+     String in = sc.nextLine().trim();
+     if(in.isEmpty())
+     {
+         op = -1;
+         continue; // salta entradas vacias
+     }
+     
+     try {
+         op = Integer.parseInt(in);
+     } catch (NumberFormatException e)
+     {
+         op = -1;
+     }
+     
+     switch (op) {
+     case 1:
+         
+         ArrayList<PC> pcs = cargarPCs();  //muestra los pcs subidos al sistema
+         if(pcs.isEmpty())
+         {
+             System.out.println("no hay pcs cargados en el sistema");
+         } else {
+             System.out.println("\n--- LISTA DE PCs ---");
+             for (PC pc : pcs) 
+             {
+                 System.out.println(pc.getId());
+             }
+         }
+         break;
+         
+     case 2:
+         break;
+     
+     case 3:
+         verTotalPuertosAbiertos(); //muestra todos los puertos abiertos en la red
+         break;
+         
+     case 4:
+         ordenarPCsPorIp(); //ordena las direcciones ip segun su categoria
+         break;
+         
+     case 0:
+         System.out.println("Saliendo del sistema...");
+         System.out.println("Adios...");
+         break;
+     default:
+         System.out.println("Opcion no valida");
+     }
 
+     
+ } while (op != 0);
+}
 private static void menuAdmin(Scanner sc)
 {
 	int op;
