@@ -92,9 +92,73 @@ public static String hash(String input) {
     }
 }
 
+public static ArrayList<PC> cargarPCs() {
+	ArrayList<PC> lista = new ArrayList<PC>();
+	
+	try {
+		File archivo = new File("pcs.txt");
+		Scanner lector = new Scanner(archivo);
 		
+		while (lector.hasNextLine()) {
+			String linea = lector.nextLine().trim();
+			if (linea.isEmpty()) continue;
+			
+			// Para soportar separadores como coma, punto y coma
+			String[] datos = linea.split("[,;]");
+			if (datos.length >= 3) {
+				String id = datos[0].trim();
+				String ip = datos[1].trim();
+				String so = datos[2].trim();
+				lista.add(new PC(id, ip, so));
+			}
+		}
+		lector.close();
+	}	catch (FileNotFoundException e) {
+		System.out.println("Archivo pcs.txt no encontrado");
+	}	
+	return lista;
+}
+
+
+
 private static void menuUsuario() {
-	}
+	Scanner sc = new Scanner(System.in);
+	int op;
+	
+	do {
+		System.out.println("\n=== MENÚ USUARIO ===");
+		System.out.println("1) Ver lista de PCs");
+		System.out.println("0) Salir");
+		System.out.print("Opción: ");
+		String in = sc.nextLine().trim();
+		if (in.isEmpty()) { op = -1; continue;}
+		
+		try {
+			op = Integer.parseInt(in);
+		} catch (NumberFormatException e) {
+			op = -1;
+		}
+		
+		switch (op) {
+		case 1:
+			ArrayList<PC> pcs = cargarPCs();
+			if (pcs.isEmpty()) {
+				System.out.println("No hay PCs cargados");
+			} else {
+				System.out.println("\n--- LISTA DE PCs ---");
+				for (PC pc : pcs) {
+					System.out.println(pc.toString());
+				}
+			}
+			break;
+		case 0:
+			System.out.println("Saliendo del Menú Usuario...");
+			break;
+		default:
+			System.out.println("Opción no válida");
+		}
+	} while (op != 0);
+}
 
 private static void menuAdmin() {
 		
