@@ -1,10 +1,15 @@
 package Taller2_POO;
 
+import java.util.ArrayList;
+
+
+
 public class PC {
 	private String id;
 	private String ip;
 	private String so;
-
+	private ArrayList<Puerto> puertos;
+	
 	public PC(String id, String ip, String so) {
 		this.id = id;
 		this.ip = ip;
@@ -27,6 +32,18 @@ public class PC {
 	public String toString() {
 		return "PC [id=" + id + ", ip=" + ip + ", so=" + so + "]";
 	}	
+	
+	public ArrayList<Puerto> getPuertos()
+	{
+		return puertos;
+	}
+	
+	public void agregarPuerto(Puerto puerto)
+	{
+		puertos.add(puerto);
+	}
+	
+	
 	public String obtenerClaseIp()
 	{
 		try {
