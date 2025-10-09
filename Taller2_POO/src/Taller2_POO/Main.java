@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
 
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -37,7 +38,7 @@ public class Main {
         // Menú según el rol
         if (rol.equals("ADMIN")) {
         	
-            menuAdmin();
+            menuAdmin(sc);
         } else if (rol.equals("USUARIO")) {
         	
             menuUsuario();
@@ -225,6 +226,110 @@ private static void menuAdmin(Scanner sc)
 		} while (op != 0);
 		
 }
+
+//relaciona el puerto expuesto con la vulnerabilidad que posee
+public static void asociarVulnerabilidades(ArrayList<Puerto> puertos, ArrayList<Vulnerabilidad> vulnerabilidades)
+{
+  for (Puerto puerto : puertos)
+  {
+      for (Vulnerabilidad vulnerabilidad : vulnerabilidades)
+      {
+          if (puerto.getNumero() == vulnerabilidad.getPuerto())
+          {
+              puerto.agregarVulnerabilidad(vulnerabilidad);
+          }
+      }
+  }
+}
+
+//carga los datos de las vulnerabilidades desde su txt
+public static ArrayList<Vulnerabilidad> cargarVulnerabilidades() {
+  ArrayList<Vulnerabilidad> lista = new ArrayList<Vulnerabilidad>();
+  
+  try {
+      
+      File archivo = new File("vulnerabilidades.txt");
+      Scanner lector = new Scanner(archivo);
+      
+      while (lector.hasNextLine()) {
+          String linea = lector.nextLine().trim();
+          if (linea.isEmpty()) 
+          {
+              continue; // saltar lineas vacias
+          }
+          
+          String[] datos = linea.split("\\|");
+          if (datos.length >= 3)
+          {
+              int puerto = Integer.parseInt(datos[0].trim());
+              String nombre = datos[1].trim();
+              String descripcion = datos[2].trim();
+              lista.add(new Vulnerabilidad(puerto,nombre,descripcion));
+              
+          }
+      }
+      
+      lector.close();
+  } catch (FileNotFoundException e) {
+      System.out.println("archivo vulnerabilidades.txt no encontrado");
+  }
+  
+  return lista;
+}
+
+//carga los puertos desde puertos.txt
+public static ArrayList<Puerto> cargarPuertos(ArrayList<PC> pcs) {
+  ArrayList<Puerto> lista = new ArrayList<Puerto>();
+  
+  try {
+      
+      File archivo = new File("puertos.txt");
+      Scanner lector = new Scanner(archivo);
+      
+      while (lector.hasNextLine()) {
+          String linea = lector.nextLine().trim();
+          if (linea.isEmpty()) 
+          {
+              continue; // saltar lineas vacias
+          }
+          
+          String[] datos = linea.split("\\|");
+          if (datos.length >= 3)
+          {
+              String idPC = datos[0].trim();
+              int numero = Integer.parseInt(datos[1].trim());
+              String estado = datos[2].trim();
+              
+              //buscar pc asociado por id
+              PC pcAsociado = null;
+              for (PC pc : pcs)
+              {
+                  if (pc.getId().equals(idPC)) 
+                  {
+                      pcAsociado = pc;
+                      break;
+                  }  
+              }
+              
+              if (pcAsociado != null)
+              {
+                  Puerto puerto = new Puerto(numero, estado, pcAsociado);
+                  lista.add(puerto);
+                  pcAsociado.agregarPuerto(puerto);
+                  
+              }					
+          }
+      }    
+      lector.close();
+  } catch (FileNotFoundException e) {
+      System.out.println("archivo puertos.txt no encontrado");
+  }
+  
+  return lista;
+}
+
+
+
 
 private static void leerVul() throws FileNotFoundException{
 		Scanner s = new Scanner(System.in);

@@ -2,8 +2,6 @@ package Taller2_POO;
 
 import java.util.ArrayList;
 
-
-
 public class PC {
 	private String id;
 	private String ip;
