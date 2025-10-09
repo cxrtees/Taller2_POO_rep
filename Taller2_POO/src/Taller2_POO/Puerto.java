@@ -46,8 +46,6 @@ public class Puerto {
 		vulnerabilidades.add(vulnerabilidad);
 	}
 	
-	
-	
 }
 
 

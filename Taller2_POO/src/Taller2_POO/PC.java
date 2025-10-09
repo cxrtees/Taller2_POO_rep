@@ -13,7 +13,7 @@ public class PC {
 		this.ip = ip;
 		this.so = so;
 	}
-
+// getters
 	public String getId() {
 		return id;
 	}
