@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
 
-import wea.PC;
-import wea.Usuario;
-
-
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -355,6 +351,41 @@ public static ArrayList<Puerto> cargarPuertos(ArrayList<PC> pcs) {
   }
   
   return lista;
+}
+
+//muestra el total de puertos que se encuentran vulnerables al estar abiertos
+private static void verTotalPuertosAbiertos() {
+  ArrayList<PC> pcs = cargarPCs();
+  ArrayList<Puerto> puertos = cargarPuertos(pcs);
+  ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+  asociarVulnerabilidades(puertos, vulnerabilidades);
+  
+  int total = 0;
+  System.out.println("\n--- Puertos abiertos en la red ---");
+  
+  for (PC pc : pcs)
+  {
+      //se obtienen los puertos abiertos asociados a los pcs del sistema
+      for (Puerto puerto : pc.getPuertos())
+      {
+          if (puerto.estaAbierto())
+          {
+              total++; //se cuenta el puerto abierto
+              System.out.println("--> Pc: " + pc.getId() + " - Puerto: " + puerto.getNumero());
+          
+              //se obtienen las vulnerabilidades asociadas a los puertos abiertos
+              for (Vulnerabilidad vulnerabilidad : puerto.getVulnerabilidades())
+              {
+                  System.out.println("--> Vulnerabilidad: " + vulnerabilidad.getNombre());
+                  
+              }
+              
+          }
+          
+      }
+      
+  }
+  System.out.println("Cantidad total de puertos abiertos: " + total);
 }
 
 
