@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
 
+
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -388,7 +390,58 @@ private static void verTotalPuertosAbiertos() {
   System.out.println("Cantidad total de puertos abiertos: " + total);
 }
 
-
+//ordena los pcs registrados en el sistema por categoria de su ip
+private static void ordenarPCsPorIp() {
+  ArrayList<PC> pcs = cargarPCs();
+  ArrayList<PC> claseA = new ArrayList<>();
+  ArrayList<PC> claseB = new ArrayList<>();
+  ArrayList<PC> claseC = new ArrayList<>();
+  ArrayList<PC> otraClase = new ArrayList<>();
+  
+  //se obtienen las clases de cada direccion de los pcs registrados en el sistema 
+  for (PC pc : pcs)
+  {
+      String clase = pc.obtenerClaseIp();
+      if (clase.equals("Clase A"))
+      {
+          claseA.add(pc);
+      } else if (clase.equals("Clase B"))
+      {
+          claseB.add(pc);
+      } else if (clase.equals("Clase C"))
+      {
+          claseC.add(pc);
+      } else {
+          otraClase.add(pc);
+      }
+      
+  } 
+  System.out.println("\n--- Pcs clase A ---");
+  for (PC pc : claseA)
+  {
+      System.out.println(pc.getId());
+  }
+  
+  System.out.println("\n--- Pcs clase B ---");
+  for (PC pc : claseB)
+  {
+      System.out.println(pc.getId());
+  }
+  
+  System.out.println("\n--- Pcs clase C ---");
+  for (PC pc : claseC)
+  {
+      System.out.println(pc.getId());
+  }
+  
+  if (!otraClase.isEmpty()) {
+      System.out.println("\n--- Pcs de otras clases ---");
+      for (PC pc : otraClase)
+      {
+          System.out.println(pc.getId());
+      }    
+  }
+}
 
 
 private static void leerVul() throws FileNotFoundException{
