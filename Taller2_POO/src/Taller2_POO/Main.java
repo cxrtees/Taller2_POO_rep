@@ -68,11 +68,12 @@ public static ArrayList<Usuario> cargarUsuarios() {
 
             lector.close();
         } catch (FileNotFoundException e) {
-            System.out.println("⚠️ Archivo usuarios.txt no encontrado.");
+            System.out.println("Archivo usuarios.txt no encontrado.");
         }
 
         return lista;
     }
+
 public static String verificarUsuario(String user, String pass,ArrayList<Usuario> usuarios) {
 	
 	for (Usuario u : usuarios) {
@@ -92,32 +93,41 @@ public static String hash(String input) {
     }
 }
 
+//carga los datos de los pcs desde pcs.txt
 public static ArrayList<PC> cargarPCs() {
 	ArrayList<PC> lista = new ArrayList<PC>();
 	
 	try {
+		
 		File archivo = new File("pcs.txt");
 		Scanner lector = new Scanner(archivo);
 		
 		while (lector.hasNextLine()) {
 			String linea = lector.nextLine().trim();
-			if (linea.isEmpty()) continue;
+			if (linea.isEmpty()) 
+			{
+				continue; // saltar lineas vacias
+			}
 			
-			// Para soportar separadores como coma, punto y coma
-			String[] datos = linea.split("[,;]");
-			if (datos.length >= 3) {
+			String[] datos = linea.split("\\|"); //separadores que tiene el archivo pcs.txt
+			if (datos.length >= 3)
+			{
 				String id = datos[0].trim();
 				String ip = datos[1].trim();
 				String so = datos[2].trim();
-				lista.add(new PC(id, ip, so));
+				lista.add(new PC(id,ip,so));
+				
 			}
 		}
+		
 		lector.close();
-	}	catch (FileNotFoundException e) {
-		System.out.println("Archivo pcs.txt no encontrado");
-	}	
+	} catch (FileNotFoundException e) {
+		System.out.println("archivo pcs.txt no encontrado");
+	}
+	
 	return lista;
 }
+
 
 
 
@@ -160,9 +170,61 @@ private static void menuUsuario() {
 	} while (op != 0);
 }
 
-private static void menuAdmin() {
+private static void menuAdmin(Scanner sc)
+{
+	int op;
 		
-		}
+		do {
+			System.out.println("\n=== MENU ADMINISTRADOR ===");
+			System.out.println("1) Ver lista completa de PCs");
+			System.out.println("2) Agregar PC");
+			System.out.println("3) Eliminar PC");
+			System.out.println("4) Clasificar PCs por nivel de riesgo");
+			System.out.println("0) Salir");
+			System.out.println("Opcion: ");
+			
+			String input = sc.nextLine().trim();
+			if (input.isEmpty())
+			{
+				op = -1;
+				continue; // salta entradas vacias
+			}
+			
+			try {
+				op = Integer.parseInt(input);
+			} catch (NumberFormatException e) {
+				op = -1;
+			}
+			
+			switch (op) {
+			case 1:
+				verListaPcs(); //muestra la lista completa de los pcs del sistema junto a su info
+				break;
+				
+			case 2:
+				agregarPC(sc); //agrega un nuevo pc al sistema junto a su info y sus puertos
+				break;
+				
+			case 3:
+				eliminarPC(sc); //elimina un pc del sistema junto a los puertos asociados
+				break;
+				
+			case 4:
+				clasificarPCsRiesgo(); //clasifica los pcs del sistema segun su nivel de riesgo y vulnerabilidades
+				break;
+				
+			case 0:
+				System.out.println("Saliendo del sistema...");
+				System.out.println("Adios...");
+				break;
+			
+			default:
+				System.out.println("Opcion no valida");
+			}
+			
+		} while (op != 0);
+		
+}
 
 private static void leerVul() throws FileNotFoundException{
 		Scanner s = new Scanner(System.in);
@@ -174,7 +236,7 @@ private static void leerVul() throws FileNotFoundException{
 		}
 	}
 
-private static void leerUsuarios() throws FileNotFoundException{
+/*private static void leerUsuarios() throws FileNotFoundException{
 		Scanner s = new Scanner(System.in);
 		File arch = new File("usuarios.txt");
 		s = new Scanner(arch);
@@ -182,7 +244,7 @@ private static void leerUsuarios() throws FileNotFoundException{
 			String linea = s.nextLine();
 			String[] partes = linea.split(";");
 		}
-	}
+	}*/
 
 private static void leerPuertos() throws FileNotFoundException{
 		Scanner s = new Scanner(System.in);
