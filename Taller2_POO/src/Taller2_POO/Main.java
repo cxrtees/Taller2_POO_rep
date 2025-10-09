@@ -101,42 +101,42 @@ private static void menuAdmin() {
 		}
 
 private static void leerVul() throws FileNotFoundException{
+		Scanner s = new Scanner(System.in);
 		File arch = new File("vulnerabilidades.txt");
 		s = new Scanner(arch);
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split("|");
-			//System.out.println(linea); //testeo	
 		}
 	}
 
 private static void leerUsuarios() throws FileNotFoundException{
+		Scanner s = new Scanner(System.in);
 		File arch = new File("usuarios.txt");
 		s = new Scanner(arch);
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split(";");
-			//System.out.println(linea); //testeo	
 		}
 	}
 
 private static void leerPuertos() throws FileNotFoundException{
+		Scanner s = new Scanner(System.in);
 		File arch = new File("puertos.txt");
 		s = new Scanner(arch);
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split("|");
-			//System.out.println(linea); //testeo		
 		}
 	}
 
 private static void leerPcs() throws FileNotFoundException {
+		Scanner s = new Scanner(System.in);
 		File arch = new File("pcs.txt");
 		s = new Scanner(arch);
 		while (s.hasNextLine()) {
 			String linea = s.nextLine();
 			String[] partes = linea.split("|");
-			//System.out.println(linea); //testeo		
 		}	
 	}
 
