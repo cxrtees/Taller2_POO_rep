@@ -556,7 +556,7 @@ private static void escanearPC(Scanner sc, Usuario usuarioLogueado) {
 	if (pcEscaneado != null)
 	{
 		//se crea objeto escaneo con el formato del registro para escribirlo en reportes.txt
-		Escaneo escaneo = new Escaneo(pcEscaneado, usuarioLogueado, new Date());
+		Escaner escaneo = new Escaner(pcEscaneado, usuarioLogueado, new Date());
 		guardarReporte(escaneo);
 		System.out.println("escaneo guardado en reportes.txt");
 		
