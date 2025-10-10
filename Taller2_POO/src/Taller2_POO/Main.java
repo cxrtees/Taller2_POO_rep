@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
 
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -254,6 +255,44 @@ private static void menuAdmin(Scanner sc)
 
 //metodos del menu de admin
 
+
+//añade un nuevo pc al sistema junto con su informacion tecnica
+private static void agregarPC(Scanner sc) {
+	ArrayList<PC> pcs = cargarPCs();
+	System.out.println("Id del nuevo Pc a registrar: ");
+	String id = sc.nextLine().trim();
+	
+	//ver si el id ya esta registrado en el sistema
+	for (PC pc : pcs)
+	{
+		if (pc.getId().equals(id))
+		{
+			System.out.println("Error, se ha encontrado un Pc con el id entregado");
+			return;
+		}
+	}
+	
+	System.out.println("Ip: ");
+	String ip = sc.nextLine().trim();
+	System.out.println("Sistema operativo: ");
+	String so = sc.nextLine().trim();
+	
+	PC nuevoPC = new PC(id, ip, so);
+	pcs.add(nuevoPC);
+	
+	//agregar el pc registrado al sistema actualizando el archivo pcs.txt 
+	guardarPCs(pcs);
+	System.out.println("Pc agregado al sistema correctamente!");
+	
+}
+
+
+private static void eliminarPC(Scanner sc) {
+	// TODO Auto-generated method stub
+	
+}
+
+
 //despliega un listado completo de los pcs registrados en el sistema junto a su informacion
 private static void verListaPcs() {
 	ArrayList<PC> pcs = cargarPCs();
@@ -465,7 +504,7 @@ private static void ordenarPCsPorIp() {
 }
 
 
-private static void leerVul() throws FileNotFoundException{
+/*private static void leerVul() throws FileNotFoundException{
 		Scanner s = new Scanner(System.in);
 		File arch = new File("vulnerabilidades.txt");
 		s = new Scanner(arch);
@@ -474,6 +513,8 @@ private static void leerVul() throws FileNotFoundException{
 			String[] partes = linea.split("|");
 		}
 	}
+	
+*/
 
 /*private static void leerUsuarios() throws FileNotFoundException{
 		Scanner s = new Scanner(System.in);
