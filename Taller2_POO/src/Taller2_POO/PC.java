@@ -2,6 +2,7 @@ package Taller2_POO;
 
 import java.util.ArrayList;
 
+
 public class PC {
 	private String id;
 	private String ip;
@@ -12,6 +13,7 @@ public class PC {
 		this.id = id;
 		this.ip = ip;
 		this.so = so;
+		this.puertos = new ArrayList<>();
 	}
 // getters
 	public String getId() {
@@ -26,11 +28,6 @@ public class PC {
 		return so;
 	}
 
-	@Override
-	public String toString() {
-		return "PC [id=" + id + ", ip=" + ip + ", so=" + so + "]";
-	}	
-	
 	public ArrayList<Puerto> getPuertos()
 	{
 		return puertos;
@@ -68,4 +65,27 @@ public class PC {
 			return "Error, clase desconocida";
 		}
 	}
+	
+	//imprime los datos de Pc
+	public void mostrarInfoCompleta()
+	{
+		System.out.println("-> Id: " + id);
+		System.out.println("-> Ip: " + ip);
+		System.out.println("-> So: " + so);
+		System.out.println("-> Puertos: ");
+		for (Puerto puerto : puertos) {
+			System.out.println("-- Puerto " + puerto.getNumero() + ": " + puerto.getEstado());
+			
+			if (puerto.estaAbierto() && !puerto.getVulnerabilidades().isEmpty()) //muestra las vulnerabilidades de los puertos abiertos 
+			{
+				System.out.println("-- Vulnerabilidades: ");
+				for (Vulnerabilidad vulnerabilidad : puerto.getVulnerabilidades())
+				{
+					System.out.println("--- * "+ vulnerabilidad.getNombre());
+					
+				}	
+			}
+		}	
+	}
+	
 }
