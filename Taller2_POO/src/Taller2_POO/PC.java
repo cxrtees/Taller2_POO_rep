@@ -33,12 +33,50 @@ public class PC {
 		return puertos;
 	}
 	
+	//se agrega un nuevo puerto a la lista de puertos asociados al pc
 	public void agregarPuerto(Puerto puerto)
 	{
 		puertos.add(puerto);
 	}
 	
 	
+	//cuenta las vulnerabilidades de cada puerto 
+	public int contarVulnerabilidades()
+	{
+		int contador = 0;
+		for (Puerto puerto : puertos)
+		{
+			//contar las vulnerabilidades del puerto que esta expuesto
+			if (puerto.estaAbierto())
+			{
+				contador += puerto.getVulnerabilidades().size();
+			}
+			
+		}
+		return contador;
+	}
+	
+	//calcula el nivel de riesgo de los pcs segun su cantidad de vulnerabilidades
+	public String calcularNivelRiesgo() 
+	{
+		int totalVulnerabilidades = contarVulnerabilidades();
+		
+		if(totalVulnerabilidades >= 3) //nivel de riesgo alto
+		{
+			return "ALTO";
+			
+		} else if (totalVulnerabilidades >= 1) //nivel de riesgo medio 
+		{
+			return "MEDIO";
+			
+		} else {
+			return "BAJO";  //nivel de riesgo bajo
+		}
+		
+	}
+	
+	
+	//calcula la clase de la direccion ip segun el rango de sus primeros digitos
 	public String obtenerClaseIp()
 	{
 		try {
