@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.Scanner;
 
 
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -287,11 +288,42 @@ private static void agregarPC(Scanner sc) {
 }
 
 
+//elimina el pc buscado por el id del sistema
 private static void eliminarPC(Scanner sc) {
-	// TODO Auto-generated method stub
+	ArrayList<PC> pcs = cargarPCs();
+	
+	System.out.println("Id del Pc a eliminar: ");
+	String id = sc.nextLine().trim();
+	
+	PC pcAEliminar = null;
+	
+	for (PC pc : pcs)
+	{
+		if (pc.getId().equals(id))
+		{
+			pcAEliminar = pc;
+			break;
+			
+		}
+	}
+	
+	if (pcAEliminar != null)
+	{
+		pcs.remove(pcAEliminar);
+		//guardar la lista de pcs actualizada en pcs.txt
+		guardarPCs(pcs);
+		System.out.println("Pc ha sido eliminado correctamente!");
+	} else {
+		System.out.println("No se ha encontrado el Pc con el Id: " + id);
+	}
 	
 }
 
+
+private static void guardarPCs(ArrayList<Taller2_POO.PC> pcs) {
+	// TODO Auto-generated method stub
+	
+}
 
 //despliega un listado completo de los pcs registrados en el sistema junto a su informacion
 private static void verListaPcs() {
