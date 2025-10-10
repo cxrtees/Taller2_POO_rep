@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Scanner;
 
 
@@ -14,9 +15,12 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
+		
+		//login principal
 		Scanner sc = new Scanner(System.in);
         boolean logueado = false;
         String rol = "";
+        Usuario usuarioLogueado = null;
 
         do {
             System.out.println("\n=== LOGIN SECURENET ===");
@@ -26,11 +30,12 @@ public class Main {
             String pass = sc.nextLine();
 
             
-            rol = verificarUsuario(user, pass,cargarUsuarios());
+            usuarioLogueado = verificarUsuario(user, pass,cargarUsuarios());
 
-            if (!rol.equals("")) {
+            if (usuarioLogueado != null) {
             	
                 logueado = true;
+                rol = usuarioLogueado.getRol();
                 System.out.println("Login exitoso como " + rol + "!");
             } else {
                 System.out.println("Usuario o contraseña incorrecta.\n");
@@ -38,13 +43,13 @@ public class Main {
 
         } while (!logueado);
 
-        // Menú según el rol
+        // Menú según el rol de usuario logueado
         if (rol.equals("ADMIN")) {
         	
             menuAdmin(sc);
-        } else if (rol.equals("USUARIO")) {
+        } else if (rol.equals("USER")) {
         	
-            menuUsuario();
+            menuUsuario(sc, usuarioLogueado);
         }
 
         sc.close();
@@ -78,23 +83,30 @@ public static ArrayList<Usuario> cargarUsuarios() {
         return lista;
     }
 
-public static String verificarUsuario(String user, String pass,ArrayList<Usuario> usuarios) {
-	
+//verifica la contraseña del login con la que registra el usuario
+private static Usuario verificarUsuario(String user, String pass, ArrayList<Usuario> usuarios) 
+{
 	for (Usuario u : usuarios) {
-        if (u.getNombre().equals(user) && hash(pass).equals(hash(u.getPassword()))) {
-            return u.getRol();
-        }
-    }
-    return ""; // no se encontró usuario o contraseña incorrecta
+		if (u.getNombre().equals(user) && hash(pass).equals(u.getPassword())) //compara si el usuario y el hash de la contraseña a loguear coinciden con la que tiene en el registro
+		{
+			return u;  //si es el usuario verificado devuelve sus datos
+		}
+	}
+	return null; //no se encontro usuario o la contraseña era incorrecta
 }
-public static String hash(String input) {
-    try {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashBytes = digest.digest(input.getBytes("UTF-8"));
-        return Base64.getEncoder().encodeToString(hashBytes);
-    } catch (Exception e) {
-        return null;
-    }
+
+//hashea la contraseña usando el algoritmo sha-256
+private static String hash(String input) {
+	try {
+		
+		MessageDigest algoritmo = MessageDigest.getInstance("SHA-256");
+		byte[] hashBytes = algoritmo.digest(input.getBytes("UTF-8"));
+		return Base64.getEncoder().encodeToString(hashBytes);
+		
+	} catch (Exception e)
+	{
+		return null;
+	}
 }
 
 //carga los datos de los pcs desde pcs.txt
@@ -179,6 +191,7 @@ private static void menuUsuario(Scanner sc, Usuario usuarioLogueado) {
          break;
          
      case 2:
+		 escanearPC(sc, usuarioLogueado);  //detalla los puertos e informacion relevante del pc buscado para escribirlo en txt
          break;
      
      case 3:
@@ -200,6 +213,9 @@ private static void menuUsuario(Scanner sc, Usuario usuarioLogueado) {
      
  } while (op != 0);
 }
+
+
+//menu de administrador
 private static void menuAdmin(Scanner sc)
 {
 	int op;
@@ -512,6 +528,42 @@ public static ArrayList<Puerto> cargarPuertos(ArrayList<PC> pcs) {
   }
   
   return lista;
+}
+
+//metodos del menu de usuario
+
+//escanea el pc escogido generando un registro de su informacion y la del usuario que realizo el escaner
+private static void escanearPC(Scanner sc, Usuario usuarioLogueado) {
+	ArrayList<PC> pcs = cargarPCs();
+	ArrayList<Puerto> puertos = cargarPuertos(pcs);
+	ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+	asociarVulnerabilidades(puertos, vulnerabilidades);
+	
+	System.out.println("Ingrese el Id del pc a escanear: ");
+	String id = sc.nextLine().trim();
+	
+	PC pcEscaneado = null;
+	for (PC pc : pcs)
+	{
+		if (pc.getId().equals(id))
+		{
+			pcEscaneado = pc;
+			break;
+		}
+		
+	}
+	
+	if (pcEscaneado != null)
+	{
+		//se crea objeto escaneo con el formato del registro para escribirlo en reportes.txt
+		Escaneo escaneo = new Escaneo(pcEscaneado, usuarioLogueado, new Date());
+		guardarReporte(escaneo);
+		System.out.println("escaneo guardado en reportes.txt");
+		
+	} else {
+		System.out.println("no se encontro el PC con el id: " + id);
+	}
+	
 }
 
 //muestra el total de puertos que se encuentran vulnerables al estar abiertos
