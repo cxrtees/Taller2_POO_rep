@@ -2,11 +2,12 @@ package Taller2_POO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
-
 
 
 public class Main {
@@ -320,9 +321,21 @@ private static void eliminarPC(Scanner sc) {
 }
 
 
-private static void guardarPCs(ArrayList<Taller2_POO.PC> pcs) {
-	// TODO Auto-generated method stub
-	
+//actualiza el archivo pcs.txt cuando se agrega o elimina un pc del sistema 
+public static void guardarPCs(ArrayList<PC> pcs)
+{
+	try {
+		FileWriter writer = new FileWriter("pcs.txt");
+		for (PC pc : pcs)
+		{
+			String linea = pc.getId() + "|" + pc.getIp() + "|" + pc.getSo();
+			writer.write(linea + "\n");
+		}
+		writer.close();
+	}catch(IOException e) {
+		System.out.println("Error al guardar el archivo pcs ->" + e.getMessage());
+		
+	}
 }
 
 //despliega un listado completo de los pcs registrados en el sistema junto a su informacion
