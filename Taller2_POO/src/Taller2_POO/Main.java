@@ -252,6 +252,29 @@ private static void menuAdmin(Scanner sc)
 		
 }
 
+//metodos del menu de admin
+
+//despliega un listado completo de los pcs registrados en el sistema junto a su informacion
+private static void verListaPcs() {
+	ArrayList<PC> pcs = cargarPCs();
+	ArrayList<Puerto> puertos = cargarPuertos(pcs);
+	ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+	asociarVulnerabilidades(puertos, vulnerabilidades);
+	
+	if (pcs.isEmpty())
+	{
+		System.out.println("no se encuentran PCs cargados en el sistema");
+	} else {
+		System.out.println("\n--- Listado completo de PCs registrados ---");
+		for (PC pc : pcs)
+		{
+			pc.mostrarInfoCompleta();
+			System.out.println("-----------------------");
+		}
+	}
+	
+}
+
 //relaciona el puerto expuesto con la vulnerabilidad que posee
 public static void asociarVulnerabilidades(ArrayList<Puerto> puertos, ArrayList<Vulnerabilidad> vulnerabilidades)
 {
