@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.Scanner;
 
 
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -256,6 +257,59 @@ private static void menuAdmin(Scanner sc)
 }
 
 //metodos del menu de admin
+
+
+//clasifica a los pcs por su nivel de riesgo
+private static void clasificarPCsRiesgo()
+{
+	ArrayList<PC> pcs = cargarPCs();
+	ArrayList<Puerto> puertos = cargarPuertos(pcs);
+	ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+	asociarVulnerabilidades(puertos, vulnerabilidades);
+	
+	ArrayList<PC> riesgoAlto = new ArrayList<>();
+	ArrayList<PC> riesgoMedio = new ArrayList<>();
+	ArrayList<PC> riesgoBajo = new ArrayList<>();
+	
+	for (PC pc : pcs)
+	{
+		String riesgo = pc.calcularNivelRiesgo();
+		if (riesgo.equals("ALTO"))
+		{
+			riesgoAlto.add(pc);
+		} else if (riesgo.equals("MEDIO"))
+		{
+			riesgoMedio.add(pc);
+		} else {
+			riesgoBajo.add(pc);
+		}
+		
+	}
+
+	System.out.println("\n--- Riesgo Alto ---");
+	for (PC pc : riesgoAlto)
+	{
+		System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+	}
+	
+	System.out.println("\n--- Riesgo Medio ---");
+	for (PC pc : riesgoMedio)
+	{
+		System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+	}
+	
+	if (!riesgoBajo.isEmpty()) {
+		System.out.println("\n--- Riesgo Bajo ---");
+		for (PC pc : riesgoBajo)
+		{
+			System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+		}
+	} else {
+		System.out.println("\n--- Riesgo Bajo ---");
+		System.out.println("... sin registros ...");
+
+	}
+}
 
 
 //añade un nuevo pc al sistema junto con su informacion tecnica
