@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 
 
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -564,6 +565,20 @@ private static void escanearPC(Scanner sc, Usuario usuarioLogueado) {
 		System.out.println("no se encontro el PC con el id: " + id);
 	}
 	
+}
+
+//guarda el informe solicitado del escaneo de los pcs en el archivo reportes.txt
+private static void guardarReporte(Escaner escaneo)
+{
+	try {
+		FileWriter writer = new FileWriter("reportes.txt", true);
+		String reporte = escaneo.generarReporte();
+		writer.write(reporte);
+		writer.write("\n================\n\n");
+		writer.close();
+	}catch (IOException e) {
+		System.out.println("Error al guardar reporte.txt: " + e.getMessage());
+	}
 }
 
 //muestra el total de puertos que se encuentran vulnerables al estar abiertos
