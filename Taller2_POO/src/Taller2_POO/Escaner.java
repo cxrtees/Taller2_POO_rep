@@ -14,6 +14,7 @@ public class Escaner {
 		this.fecha = fecha;
 	}
 	
+	//getters 
 	public PC getPc() {
 		return pc;
 	}
@@ -28,6 +29,7 @@ public class Escaner {
 		return fecha;
 	}
 	
+	//formatea los datos del resultado del escaner
 	public String generarReporte()
 	{
 		String reporte = "";

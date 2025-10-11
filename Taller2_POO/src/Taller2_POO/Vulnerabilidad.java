@@ -13,6 +13,7 @@ public class Vulnerabilidad {
 		this.descripcion = descripcion;
 	}
 	
+	//getters
 	public int getPuerto()
 	{
 		return puerto;

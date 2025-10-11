@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 
 
+
 public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -56,660 +57,635 @@ public class Main {
         sc.close();
     }
 	
-public static ArrayList<Usuario> cargarUsuarios() {
-        ArrayList<Usuario> lista = new ArrayList<>();
-
-        try {
-            File archivo = new File("usuarios.txt");
-            Scanner lector = new Scanner(archivo);
-
-            while (lector.hasNextLine()) {
-                String linea = lector.nextLine().trim();
-                if (linea.isEmpty()) continue;
-
-                String[] datos = linea.split(",");
-                if (datos.length == 3) {
-                    String nombre = datos[0].trim();
-                    String password = datos[1].trim();
-                    String rol = datos[2].trim();
-                    lista.add(new Usuario(nombre, password, rol));
-                }
-            }
-
-            lector.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Archivo usuarios.txt no encontrado.");
-        }
-
-        return lista;
-    }
-
-//verifica la contraseña del login con la que registra el usuario
-private static Usuario verificarUsuario(String user, String pass, ArrayList<Usuario> usuarios) 
-{
-	for (Usuario u : usuarios) {
-		if (u.getNombre().equals(user) && hash(pass).equals(u.getPassword())) //compara si el usuario y el hash de la contraseña a loguear coinciden con la que tiene en el registro
-		{
-			return u;  //si es el usuario verificado devuelve sus datos
-		}
-	}
-	return null; //no se encontro usuario o la contraseña era incorrecta
-}
-
-//hashea la contraseña usando el algoritmo sha-256
-private static String hash(String input) {
-	try {
-		
-		MessageDigest algoritmo = MessageDigest.getInstance("SHA-256");
-		byte[] hashBytes = algoritmo.digest(input.getBytes("UTF-8"));
-		return Base64.getEncoder().encodeToString(hashBytes);
-		
-	} catch (Exception e)
-	{
-		return null;
-	}
-}
-
-//carga los datos de los pcs desde pcs.txt
-public static ArrayList<PC> cargarPCs() {
-	ArrayList<PC> lista = new ArrayList<PC>();
 	
-	try {
+	//funciones de lectura 
+	
+	//carga los datos de usuarios.txt
+	public static ArrayList<Usuario> cargarUsuarios() {
+		ArrayList<Usuario> lista = new ArrayList<>();
 		
-		File archivo = new File("pcs.txt");
-		Scanner lector = new Scanner(archivo);
-		
-		while (lector.hasNextLine()) {
-			String linea = lector.nextLine().trim();
-			if (linea.isEmpty()) 
+		try {
+			File archivo = new File("usuarios.txt");
+			Scanner lector = new Scanner(archivo);
+			
+			while (lector.hasNextLine())
 			{
-				continue; // saltar lineas vacias
+				String linea = lector.nextLine().trim();
+				if (linea.isEmpty())
+				{
+					continue; // saltar lineas vacias
+				}
+				
+				String[] datos = linea.split(";");
+				if (datos.length >= 3)
+				{
+					String nombre = datos[0].trim();
+					String password = datos[1].trim();
+					String rol = datos[2].trim();
+					lista.add(new Usuario(nombre, password, rol));
+				}
 			}
 			
-			String[] datos = linea.split("\\|"); //separadores que tiene el archivo pcs.txt
-			if (datos.length >= 3)
-			{
-				String id = datos[0].trim();
-				String ip = datos[1].trim();
-				String so = datos[2].trim();
-				lista.add(new PC(id,ip,so));
-				
-			}
+			lector.close();
+	
+		} catch (FileNotFoundException e) {
+			System.out.println("archivo usuarios.txt no encontrado");
 		}
 		
-		lector.close();
-	} catch (FileNotFoundException e) {
-		System.out.println("archivo pcs.txt no encontrado");
+		return lista;
 	}
 	
-	return lista;
-}
-
-
-
-
-//menu de usuario
-private static void menuUsuario(Scanner sc, Usuario usuarioLogueado) {
- int op;
- 
- do {
-     System.out.println("\n=== MENU USUARIO ===");
-     System.out.println("1) Ver lista de PCs");
-     System.out.println("2) Escanear un PC");
-     System.out.println("3) Ver total de puertos abiertos");
-     System.out.println("4) Ordenar PCs por IP");
-     System.out.println("0) Salir");
-     System.out.print("Opcion: ");
-     
-     String in = sc.nextLine().trim();
-     if(in.isEmpty())
-     {
-         op = -1;
-         continue; // salta entradas vacias
-     }
-     
-     try {
-         op = Integer.parseInt(in);
-     } catch (NumberFormatException e)
-     {
-         op = -1;
-     }
-     
-     switch (op) {
-     case 1:
-         
-         ArrayList<PC> pcs = cargarPCs();  //muestra los pcs subidos al sistema
-         if(pcs.isEmpty())
-         {
-             System.out.println("no hay pcs cargados en el sistema");
-         } else {
-             System.out.println("\n--- LISTA DE PCs ---");
-             for (PC pc : pcs) 
-             {
-                 System.out.println(pc.getId());
-             }
-         }
-         break;
-         
-     case 2:
-		 escanearPC(sc, usuarioLogueado);  //detalla los puertos e informacion relevante del pc buscado para escribirlo en txt
-         break;
-     
-     case 3:
-         verTotalPuertosAbiertos(); //muestra todos los puertos abiertos en la red
-         break;
-         
-     case 4:
-         ordenarPCsPorIp(); //ordena las direcciones ip segun su categoria
-         break;
-         
-     case 0:
-         System.out.println("Saliendo del sistema...");
-         System.out.println("Adios...");
-         break;
-     default:
-         System.out.println("Opcion no valida");
-     }
-
-     
- } while (op != 0);
-}
-
-
-//menu de administrador
-private static void menuAdmin(Scanner sc)
-{
-	int op;
+	//carga los datos de los pcs desde pcs.txt
+	public static ArrayList<PC> cargarPCs() {
+		ArrayList<PC> lista = new ArrayList<PC>();
 		
-		do {
-			System.out.println("\n=== MENU ADMINISTRADOR ===");
-			System.out.println("1) Ver lista completa de PCs");
-			System.out.println("2) Agregar PC");
-			System.out.println("3) Eliminar PC");
-			System.out.println("4) Clasificar PCs por nivel de riesgo");
-			System.out.println("0) Salir");
-			System.out.println("Opcion: ");
+		try {
 			
-			String input = sc.nextLine().trim();
-			if (input.isEmpty())
-			{
-				op = -1;
-				continue; // salta entradas vacias
+			File archivo = new File("pcs.txt");
+			Scanner lector = new Scanner(archivo);
+			
+			while (lector.hasNextLine()) {
+				String linea = lector.nextLine().trim();
+				if (linea.isEmpty()) 
+				{
+					continue; // saltar lineas vacias
+				}
+				
+				String[] datos = linea.split("\\|"); //separadores que tiene el archivo pcs.txt
+				if (datos.length >= 3)
+				{
+					String id = datos[0].trim();
+					String ip = datos[1].trim();
+					String so = datos[2].trim();
+					lista.add(new PC(id,ip,so));
+					
+				}
 			}
 			
-			try {
-				op = Integer.parseInt(input);
-			} catch (NumberFormatException e) {
-				op = -1;
-			}
-			
-			switch (op) {
-			case 1:
-				verListaPcs(); //muestra la lista completa de los pcs del sistema junto a su info
-				break;
-				
-			case 2:
-				agregarPC(sc); //agrega un nuevo pc al sistema junto a su info y sus puertos
-				break;
-				
-			case 3:
-				eliminarPC(sc); //elimina un pc del sistema junto a los puertos asociados
-				break;
-				
-			case 4:
-				clasificarPCsRiesgo(); //clasifica los pcs del sistema segun su nivel de riesgo y vulnerabilidades
-				break;
-				
-			case 0:
-				System.out.println("Saliendo del sistema...");
-				System.out.println("Adios...");
-				break;
-			
-			default:
-				System.out.println("Opcion no valida");
-			}
-			
-		} while (op != 0);
-		
-}
-
-//metodos del menu de admin
-
-
-//clasifica a los pcs por su nivel de riesgo
-private static void clasificarPCsRiesgo()
-{
-	ArrayList<PC> pcs = cargarPCs();
-	ArrayList<Puerto> puertos = cargarPuertos(pcs);
-	ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
-	asociarVulnerabilidades(puertos, vulnerabilidades);
-	
-	ArrayList<PC> riesgoAlto = new ArrayList<>();
-	ArrayList<PC> riesgoMedio = new ArrayList<>();
-	ArrayList<PC> riesgoBajo = new ArrayList<>();
-	
-	for (PC pc : pcs)
-	{
-		String riesgo = pc.calcularNivelRiesgo();
-		if (riesgo.equals("ALTO"))
-		{
-			riesgoAlto.add(pc);
-		} else if (riesgo.equals("MEDIO"))
-		{
-			riesgoMedio.add(pc);
-		} else {
-			riesgoBajo.add(pc);
+			lector.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("archivo pcs.txt no encontrado");
 		}
 		
-	}
-
-	System.out.println("\n--- Riesgo Alto ---");
-	for (PC pc : riesgoAlto)
-	{
-		System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+		return lista;
 	}
 	
-	System.out.println("\n--- Riesgo Medio ---");
-	for (PC pc : riesgoMedio)
-	{
-		System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+	
+	//carga los datos de las vulnerabilidades desde su txt
+	public static ArrayList<Vulnerabilidad> cargarVulnerabilidades() {
+	  ArrayList<Vulnerabilidad> lista = new ArrayList<Vulnerabilidad>();
+	  
+	  try {
+	      
+	      File archivo = new File("vulnerabilidades.txt");
+	      Scanner lector = new Scanner(archivo);
+	      
+	      while (lector.hasNextLine()) {
+	          String linea = lector.nextLine().trim();
+	          if (linea.isEmpty()) 
+	          {
+	              continue; // saltar lineas vacias
+	          }
+	          
+	          String[] datos = linea.split("\\|");
+	          if (datos.length >= 3)
+	          {
+	              int puerto = Integer.parseInt(datos[0].trim());
+	              String nombre = datos[1].trim();
+	              String descripcion = datos[2].trim();
+	              lista.add(new Vulnerabilidad(puerto,nombre,descripcion));
+	              
+	          }
+	      }
+	      
+	      lector.close();
+	  } catch (FileNotFoundException e) {
+	      System.out.println("archivo vulnerabilidades.txt no encontrado");
+	  }
+	  
+	  return lista;
 	}
 	
-	if (!riesgoBajo.isEmpty()) {
-		System.out.println("\n--- Riesgo Bajo ---");
-		for (PC pc : riesgoBajo)
+	
+	//carga los puertos desde puertos.txt
+	public static ArrayList<Puerto> cargarPuertos(ArrayList<PC> pcs) {
+	  ArrayList<Puerto> lista = new ArrayList<Puerto>();
+	  
+	  try {
+	      
+	      File archivo = new File("puertos.txt");
+	      Scanner lector = new Scanner(archivo);
+	      
+	      while (lector.hasNextLine()) {
+	          String linea = lector.nextLine().trim();
+	          if (linea.isEmpty()) 
+	          {
+	              continue; // saltar lineas vacias
+	          }
+	          
+	          String[] datos = linea.split("\\|");
+	          if (datos.length >= 3)
+	          {
+	              String idPC = datos[0].trim();
+	              int numero = Integer.parseInt(datos[1].trim());
+	              String estado = datos[2].trim();
+	              
+	              //buscar pc asociado por id
+	              PC pcAsociado = null;
+	              for (PC pc : pcs)
+	              {
+	                  if (pc.getId().equals(idPC)) 
+	                  {
+	                      pcAsociado = pc;
+	                      break;
+	                  }  
+	              }
+	              
+	              if (pcAsociado != null)
+	              {
+	                  Puerto puerto = new Puerto(numero, estado, pcAsociado);
+	                  lista.add(puerto);
+	                  pcAsociado.agregarPuerto(puerto);
+	                  
+	              }					
+	          }
+	      }    
+	      lector.close();
+	  } catch (FileNotFoundException e) {
+	      System.out.println("archivo puertos.txt no encontrado");
+	  }
+	  
+	  return lista;
+	}
+	
+	
+	//funciones de logueo
+	
+	//verifica la contraseña del login con la que registra el usuario
+	private static Usuario verificarUsuario(String user, String pass, ArrayList<Usuario> usuarios) 
+	{
+		for (Usuario u : usuarios) {
+			if (u.getNombre().equals(user) && hash(pass).equals(u.getPassword())) //compara si el usuario y el hash de la contraseña a loguear coinciden con la que tiene en el registro
+			{
+				return u;  //si es el usuario verificado devuelve sus datos
+			}
+		}
+		return null; //no se encontro usuario o la contraseña era incorrecta
+	}
+	
+	//hashea la contraseña usando el algoritmo sha-256
+	private static String hash(String input) {
+		try {
+			
+			MessageDigest algoritmo = MessageDigest.getInstance("SHA-256");
+			byte[] hashBytes = algoritmo.digest(input.getBytes("UTF-8"));
+			return Base64.getEncoder().encodeToString(hashBytes);
+			
+		} catch (Exception e)
+		{
+			return null;
+		}
+	}
+	
+	
+	
+	//menu de usuario
+	private static void menuUsuario(Scanner sc, Usuario usuarioLogueado) {
+	 int op;
+	 
+	 do {
+	     System.out.println("\n=== MENU USUARIO ===");
+	     System.out.println("1) Ver lista de PCs");
+	     System.out.println("2) Escanear un PC");
+	     System.out.println("3) Ver total de puertos abiertos");
+	     System.out.println("4) Ordenar PCs por IP");
+	     System.out.println("0) Salir");
+	     System.out.print("Opcion: ");
+	     
+	     String in = sc.nextLine().trim();
+	     if(in.isEmpty())
+	     {
+	         op = -1;
+	         continue; // salta entradas vacias
+	     }
+	     
+	     try {
+	         op = Integer.parseInt(in);
+	     } catch (NumberFormatException e)
+	     {
+	         op = -1;
+	     }
+	     
+	     switch (op) {
+	     case 1:
+	         
+	         ArrayList<PC> pcs = cargarPCs();  //muestra los pcs subidos al sistema
+	         if(pcs.isEmpty())
+	         {
+	             System.out.println("no hay pcs cargados en el sistema");
+	         } else {
+	             System.out.println("\n--- LISTA DE PCs ---");
+	             for (PC pc : pcs) 
+	             {
+	                 System.out.println(pc.getId());
+	             }
+	         }
+	         break;
+	         
+	     case 2:
+			 escanearPC(sc, usuarioLogueado);  //detalla los puertos e informacion relevante del pc buscado para escribirlo en txt
+	         break;
+	     
+	     case 3:
+	         verTotalPuertosAbiertos(); //muestra todos los puertos abiertos en la red
+	         break;
+	         
+	     case 4:
+	         ordenarPCsPorIp(); //ordena las direcciones ip segun su categoria
+	         break;
+	         
+	     case 0:
+	         System.out.println("Saliendo del sistema...");
+	         System.out.println("Adios...");
+	         break;
+	     default:
+	         System.out.println("Opcion no valida");
+	     }
+	
+	     
+	 } while (op != 0);
+	}
+	
+	
+	//menu de administrador
+	private static void menuAdmin(Scanner sc)
+	{
+		int op;
+			
+			do {
+				System.out.println("\n=== MENU ADMINISTRADOR ===");
+				System.out.println("1) Ver lista completa de PCs");
+				System.out.println("2) Agregar PC");
+				System.out.println("3) Eliminar PC");
+				System.out.println("4) Clasificar PCs por nivel de riesgo");
+				System.out.println("0) Salir");
+				System.out.println("Opcion: ");
+				
+				String input = sc.nextLine().trim();
+				if (input.isEmpty())
+				{
+					op = -1;
+					continue; // salta entradas vacias
+				}
+				
+				try {
+					op = Integer.parseInt(input);
+				} catch (NumberFormatException e) {
+					op = -1;
+				}
+				
+				switch (op) {
+				case 1:
+					verListaPcs(); //muestra la lista completa de los pcs del sistema junto a su info
+					break;
+					
+				case 2:
+					agregarPC(sc); //agrega un nuevo pc al sistema junto a su info y sus puertos
+					break;
+					
+				case 3:
+					eliminarPC(sc); //elimina un pc del sistema junto a los puertos asociados
+					break;
+					
+				case 4:
+					clasificarPCsRiesgo(); //clasifica los pcs del sistema segun su nivel de riesgo y vulnerabilidades
+					break;
+					
+				case 0:
+					System.out.println("Saliendo del sistema...");
+					System.out.println("Adios...");
+					break;
+				
+				default:
+					System.out.println("Opcion no valida");
+				}
+				
+			} while (op != 0);
+			
+	}
+	
+	//metodos del menu de admin
+	
+	
+	//clasifica a los pcs por su nivel de riesgo
+	private static void clasificarPCsRiesgo()
+	{
+		ArrayList<PC> pcs = cargarPCs();
+		ArrayList<Puerto> puertos = cargarPuertos(pcs);
+		ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+		asociarVulnerabilidades(puertos, vulnerabilidades);
+		
+		ArrayList<PC> riesgoAlto = new ArrayList<>();
+		ArrayList<PC> riesgoMedio = new ArrayList<>();
+		ArrayList<PC> riesgoBajo = new ArrayList<>();
+		
+		for (PC pc : pcs)
+		{
+			String riesgo = pc.calcularNivelRiesgo();
+			if (riesgo.equals("ALTO"))
+			{
+				riesgoAlto.add(pc);
+			} else if (riesgo.equals("MEDIO"))
+			{
+				riesgoMedio.add(pc);
+			} else {
+				riesgoBajo.add(pc);
+			}
+			
+		}
+	
+		System.out.println("\n--- Riesgo Alto ---");
+		for (PC pc : riesgoAlto)
 		{
 			System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
 		}
-	} else {
-		System.out.println("\n--- Riesgo Bajo ---");
-		System.out.println("... sin registros ...");
-
-	}
-}
-
-
-//añade un nuevo pc al sistema junto con su informacion tecnica
-private static void agregarPC(Scanner sc) {
-	ArrayList<PC> pcs = cargarPCs();
-	System.out.println("Id del nuevo Pc a registrar: ");
-	String id = sc.nextLine().trim();
-	
-	//ver si el id ya esta registrado en el sistema
-	for (PC pc : pcs)
-	{
-		if (pc.getId().equals(id))
+		
+		System.out.println("\n--- Riesgo Medio ---");
+		for (PC pc : riesgoMedio)
 		{
-			System.out.println("Error, se ha encontrado un Pc con el id entregado");
-			return;
+			System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+		}
+		
+		if (!riesgoBajo.isEmpty()) {
+			System.out.println("\n--- Riesgo Bajo ---");
+			for (PC pc : riesgoBajo)
+			{
+				System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+			}
+		} else {
+			System.out.println("\n--- Riesgo Bajo ---");
+			System.out.println("... sin registros ...");
+	
 		}
 	}
 	
-	System.out.println("Ip: ");
-	String ip = sc.nextLine().trim();
-	System.out.println("Sistema operativo: ");
-	String so = sc.nextLine().trim();
 	
-	PC nuevoPC = new PC(id, ip, so);
-	pcs.add(nuevoPC);
-	
-	//agregar el pc registrado al sistema actualizando el archivo pcs.txt 
-	guardarPCs(pcs);
-	System.out.println("Pc agregado al sistema correctamente!");
-	
-}
-
-
-//elimina el pc buscado por el id del sistema
-private static void eliminarPC(Scanner sc) {
-	ArrayList<PC> pcs = cargarPCs();
-	
-	System.out.println("Id del Pc a eliminar: ");
-	String id = sc.nextLine().trim();
-	
-	PC pcAEliminar = null;
-	
-	for (PC pc : pcs)
-	{
-		if (pc.getId().equals(id))
+	//añade un nuevo pc al sistema junto con su informacion tecnica
+	private static void agregarPC(Scanner sc) {
+		ArrayList<PC> pcs = cargarPCs();
+		System.out.println("Id del nuevo Pc a registrar: ");
+		String id = sc.nextLine().trim();
+		
+		//ver si el id ya esta registrado en el sistema
+		for (PC pc : pcs)
 		{
-			pcAEliminar = pc;
-			break;
+			if (pc.getId().equals(id))
+			{
+				System.out.println("Error, se ha encontrado un Pc con el id entregado");
+				return;
+			}
+		}
+		
+		System.out.println("Ip: ");
+		String ip = sc.nextLine().trim();
+		System.out.println("Sistema operativo: ");
+		String so = sc.nextLine().trim();
+		
+		PC nuevoPC = new PC(id, ip, so);
+		pcs.add(nuevoPC);
+		
+		//agregar el pc registrado al sistema actualizando el archivo pcs.txt 
+		guardarPCs(pcs);
+		System.out.println("Pc agregado al sistema correctamente!");
+		
+	}
+	
+	
+	//elimina el pc buscado por el id del sistema
+	private static void eliminarPC(Scanner sc) {
+		ArrayList<PC> pcs = cargarPCs();
+		
+		System.out.println("Id del Pc a eliminar: ");
+		String id = sc.nextLine().trim();
+		
+		PC pcAEliminar = null;
+		
+		for (PC pc : pcs)
+		{
+			if (pc.getId().equals(id))
+			{
+				pcAEliminar = pc;
+				break;
+				
+			}
+		}
+		
+		if (pcAEliminar != null)
+		{
+			pcs.remove(pcAEliminar);
+			//guardar la lista de pcs actualizada en pcs.txt
+			guardarPCs(pcs);
+			System.out.println("Pc ha sido eliminado correctamente!");
+		} else {
+			System.out.println("No se ha encontrado el Pc con el Id: " + id);
+		}
+		
+	}
+	
+	
+	//actualiza el archivo pcs.txt cuando se agrega o elimina un pc del sistema 
+	public static void guardarPCs(ArrayList<PC> pcs)
+	{
+		try {
+			FileWriter writer = new FileWriter("pcs.txt");
+			for (PC pc : pcs)
+			{
+				String linea = pc.getId() + "|" + pc.getIp() + "|" + pc.getSo();
+				writer.write(linea + "\n");
+			}
+			writer.close();
+		}catch(IOException e) {
+			System.out.println("Error al guardar el archivo pcs ->" + e.getMessage());
 			
 		}
 	}
 	
-	if (pcAEliminar != null)
-	{
-		pcs.remove(pcAEliminar);
-		//guardar la lista de pcs actualizada en pcs.txt
-		guardarPCs(pcs);
-		System.out.println("Pc ha sido eliminado correctamente!");
-	} else {
-		System.out.println("No se ha encontrado el Pc con el Id: " + id);
+	//despliega un listado completo de los pcs registrados en el sistema junto a su informacion
+	private static void verListaPcs() {
+		ArrayList<PC> pcs = cargarPCs();
+		ArrayList<Puerto> puertos = cargarPuertos(pcs);
+		ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+		asociarVulnerabilidades(puertos, vulnerabilidades);
+		
+		if (pcs.isEmpty())
+		{
+			System.out.println("no se encuentran PCs cargados en el sistema");
+		} else {
+			System.out.println("\n--- Listado completo de PCs registrados ---");
+			for (PC pc : pcs)
+			{
+				pc.mostrarInfoCompleta();
+				System.out.println("-----------------------");
+			}
+		}
+		
 	}
 	
-}
-
-
-//actualiza el archivo pcs.txt cuando se agrega o elimina un pc del sistema 
-public static void guardarPCs(ArrayList<PC> pcs)
-{
-	try {
-		FileWriter writer = new FileWriter("pcs.txt");
+	//relaciona el puerto expuesto con la vulnerabilidad que posee
+	public static void asociarVulnerabilidades(ArrayList<Puerto> puertos, ArrayList<Vulnerabilidad> vulnerabilidades)
+	{
+	  for (Puerto puerto : puertos)
+	  {
+	      for (Vulnerabilidad vulnerabilidad : vulnerabilidades)
+	      {
+	          if (puerto.getNumero() == vulnerabilidad.getPuerto())
+	          {
+	              puerto.agregarVulnerabilidad(vulnerabilidad);
+	          }
+	      }
+	  }
+	}
+	
+	
+	
+	
+	
+	//metodos del menu de usuario
+	
+	//escanea el pc escogido generando un registro de su informacion y la del usuario que realizo el escaner
+	private static void escanearPC(Scanner sc, Usuario usuarioLogueado) {
+		ArrayList<PC> pcs = cargarPCs();
+		ArrayList<Puerto> puertos = cargarPuertos(pcs);
+		ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+		asociarVulnerabilidades(puertos, vulnerabilidades);
+		
+		System.out.println("Ingrese el Id del pc a escanear: ");
+		String id = sc.nextLine().trim();
+		
+		PC pcEscaneado = null;
 		for (PC pc : pcs)
 		{
-			String linea = pc.getId() + "|" + pc.getIp() + "|" + pc.getSo();
-			writer.write(linea + "\n");
+			if (pc.getId().equals(id))
+			{
+				pcEscaneado = pc;
+				break;
+			}
+			
 		}
-		writer.close();
-	}catch(IOException e) {
-		System.out.println("Error al guardar el archivo pcs ->" + e.getMessage());
 		
-	}
-}
-
-//despliega un listado completo de los pcs registrados en el sistema junto a su informacion
-private static void verListaPcs() {
-	ArrayList<PC> pcs = cargarPCs();
-	ArrayList<Puerto> puertos = cargarPuertos(pcs);
-	ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
-	asociarVulnerabilidades(puertos, vulnerabilidades);
-	
-	if (pcs.isEmpty())
-	{
-		System.out.println("no se encuentran PCs cargados en el sistema");
-	} else {
-		System.out.println("\n--- Listado completo de PCs registrados ---");
-		for (PC pc : pcs)
+		if (pcEscaneado != null)
 		{
-			pc.mostrarInfoCompleta();
-			System.out.println("-----------------------");
-		}
-	}
-	
-}
-
-//relaciona el puerto expuesto con la vulnerabilidad que posee
-public static void asociarVulnerabilidades(ArrayList<Puerto> puertos, ArrayList<Vulnerabilidad> vulnerabilidades)
-{
-  for (Puerto puerto : puertos)
-  {
-      for (Vulnerabilidad vulnerabilidad : vulnerabilidades)
-      {
-          if (puerto.getNumero() == vulnerabilidad.getPuerto())
-          {
-              puerto.agregarVulnerabilidad(vulnerabilidad);
-          }
-      }
-  }
-}
-
-//carga los datos de las vulnerabilidades desde su txt
-public static ArrayList<Vulnerabilidad> cargarVulnerabilidades() {
-  ArrayList<Vulnerabilidad> lista = new ArrayList<Vulnerabilidad>();
-  
-  try {
-      
-      File archivo = new File("vulnerabilidades.txt");
-      Scanner lector = new Scanner(archivo);
-      
-      while (lector.hasNextLine()) {
-          String linea = lector.nextLine().trim();
-          if (linea.isEmpty()) 
-          {
-              continue; // saltar lineas vacias
-          }
-          
-          String[] datos = linea.split("\\|");
-          if (datos.length >= 3)
-          {
-              int puerto = Integer.parseInt(datos[0].trim());
-              String nombre = datos[1].trim();
-              String descripcion = datos[2].trim();
-              lista.add(new Vulnerabilidad(puerto,nombre,descripcion));
-              
-          }
-      }
-      
-      lector.close();
-  } catch (FileNotFoundException e) {
-      System.out.println("archivo vulnerabilidades.txt no encontrado");
-  }
-  
-  return lista;
-}
-
-//carga los puertos desde puertos.txt
-public static ArrayList<Puerto> cargarPuertos(ArrayList<PC> pcs) {
-  ArrayList<Puerto> lista = new ArrayList<Puerto>();
-  
-  try {
-      
-      File archivo = new File("puertos.txt");
-      Scanner lector = new Scanner(archivo);
-      
-      while (lector.hasNextLine()) {
-          String linea = lector.nextLine().trim();
-          if (linea.isEmpty()) 
-          {
-              continue; // saltar lineas vacias
-          }
-          
-          String[] datos = linea.split("\\|");
-          if (datos.length >= 3)
-          {
-              String idPC = datos[0].trim();
-              int numero = Integer.parseInt(datos[1].trim());
-              String estado = datos[2].trim();
-              
-              //buscar pc asociado por id
-              PC pcAsociado = null;
-              for (PC pc : pcs)
-              {
-                  if (pc.getId().equals(idPC)) 
-                  {
-                      pcAsociado = pc;
-                      break;
-                  }  
-              }
-              
-              if (pcAsociado != null)
-              {
-                  Puerto puerto = new Puerto(numero, estado, pcAsociado);
-                  lista.add(puerto);
-                  pcAsociado.agregarPuerto(puerto);
-                  
-              }					
-          }
-      }    
-      lector.close();
-  } catch (FileNotFoundException e) {
-      System.out.println("archivo puertos.txt no encontrado");
-  }
-  
-  return lista;
-}
-
-//metodos del menu de usuario
-
-//escanea el pc escogido generando un registro de su informacion y la del usuario que realizo el escaner
-private static void escanearPC(Scanner sc, Usuario usuarioLogueado) {
-	ArrayList<PC> pcs = cargarPCs();
-	ArrayList<Puerto> puertos = cargarPuertos(pcs);
-	ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
-	asociarVulnerabilidades(puertos, vulnerabilidades);
-	
-	System.out.println("Ingrese el Id del pc a escanear: ");
-	String id = sc.nextLine().trim();
-	
-	PC pcEscaneado = null;
-	for (PC pc : pcs)
-	{
-		if (pc.getId().equals(id))
-		{
-			pcEscaneado = pc;
-			break;
+			//se crea objeto escaneo con el formato del registro para escribirlo en reportes.txt
+			Escaner escaneo = new Escaner(pcEscaneado, usuarioLogueado, new Date());
+			guardarReporte(escaneo);
+			System.out.println("escaneo guardado en reportes.txt");
+			
+		} else {
+			System.out.println("no se encontro el PC con el id: " + id);
 		}
 		
 	}
 	
-	if (pcEscaneado != null)
+	//guarda el informe solicitado del escaneo de los pcs en el archivo reportes.txt
+	private static void guardarReporte(Escaner escaneo)
 	{
-		//se crea objeto escaneo con el formato del registro para escribirlo en reportes.txt
-		Escaner escaneo = new Escaner(pcEscaneado, usuarioLogueado, new Date());
-		guardarReporte(escaneo);
-		System.out.println("escaneo guardado en reportes.txt");
-		
-	} else {
-		System.out.println("no se encontro el PC con el id: " + id);
-	}
-	
-}
-
-//guarda el informe solicitado del escaneo de los pcs en el archivo reportes.txt
-private static void guardarReporte(Escaner escaneo)
-{
-	try {
-		FileWriter writer = new FileWriter("reportes.txt", true);
-		String reporte = escaneo.generarReporte();
-		writer.write(reporte);
-		writer.write("\n================\n\n");
-		writer.close();
-	}catch (IOException e) {
-		System.out.println("Error al guardar reporte.txt: " + e.getMessage());
-	}
-}
-
-//muestra el total de puertos que se encuentran vulnerables al estar abiertos
-private static void verTotalPuertosAbiertos() {
-  ArrayList<PC> pcs = cargarPCs();
-  ArrayList<Puerto> puertos = cargarPuertos(pcs);
-  ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
-  asociarVulnerabilidades(puertos, vulnerabilidades);
-  
-  int total = 0;
-  System.out.println("\n--- Puertos abiertos en la red ---");
-  
-  for (PC pc : pcs)
-  {
-      //se obtienen los puertos abiertos asociados a los pcs del sistema
-      for (Puerto puerto : pc.getPuertos())
-      {
-          if (puerto.estaAbierto())
-          {
-              total++; //se cuenta el puerto abierto
-              System.out.println("--> Pc: " + pc.getId() + " - Puerto: " + puerto.getNumero());
-          
-              //se obtienen las vulnerabilidades asociadas a los puertos abiertos
-              for (Vulnerabilidad vulnerabilidad : puerto.getVulnerabilidades())
-              {
-                  System.out.println("--> Vulnerabilidad: " + vulnerabilidad.getNombre());
-                  
-              }
-              
-          }
-          
-      }
-      
-  }
-  System.out.println("Cantidad total de puertos abiertos: " + total);
-}
-
-//ordena los pcs registrados en el sistema por categoria de su ip
-private static void ordenarPCsPorIp() {
-  ArrayList<PC> pcs = cargarPCs();
-  ArrayList<PC> claseA = new ArrayList<>();
-  ArrayList<PC> claseB = new ArrayList<>();
-  ArrayList<PC> claseC = new ArrayList<>();
-  ArrayList<PC> otraClase = new ArrayList<>();
-  
-  //se obtienen las clases de cada direccion de los pcs registrados en el sistema 
-  for (PC pc : pcs)
-  {
-      String clase = pc.obtenerClaseIp();
-      if (clase.equals("Clase A"))
-      {
-          claseA.add(pc);
-      } else if (clase.equals("Clase B"))
-      {
-          claseB.add(pc);
-      } else if (clase.equals("Clase C"))
-      {
-          claseC.add(pc);
-      } else {
-          otraClase.add(pc);
-      }
-      
-  } 
-  System.out.println("\n--- Pcs clase A ---");
-  for (PC pc : claseA)
-  {
-      System.out.println(pc.getId());
-  }
-  
-  System.out.println("\n--- Pcs clase B ---");
-  for (PC pc : claseB)
-  {
-      System.out.println(pc.getId());
-  }
-  
-  System.out.println("\n--- Pcs clase C ---");
-  for (PC pc : claseC)
-  {
-      System.out.println(pc.getId());
-  }
-  
-  if (!otraClase.isEmpty()) {
-      System.out.println("\n--- Pcs de otras clases ---");
-      for (PC pc : otraClase)
-      {
-          System.out.println(pc.getId());
-      }    
-  }
-}
-
-
-/*private static void leerVul() throws FileNotFoundException{
-		Scanner s = new Scanner(System.in);
-		File arch = new File("vulnerabilidades.txt");
-		s = new Scanner(arch);
-		while (s.hasNextLine()) {
-			String linea = s.nextLine();
-			String[] partes = linea.split("|");
+		try {
+			FileWriter writer = new FileWriter("reportes.txt", true);
+			String reporte = escaneo.generarReporte();
+			writer.write(reporte);
+			writer.write("\n================\n\n");
+			writer.close();
+		}catch (IOException e) {
+			System.out.println("Error al guardar reporte.txt: " + e.getMessage());
 		}
 	}
 	
-*/
-
-/*private static void leerUsuarios() throws FileNotFoundException{
-		Scanner s = new Scanner(System.in);
-		File arch = new File("usuarios.txt");
-		s = new Scanner(arch);
-		while (s.hasNextLine()) {
-			String linea = s.nextLine();
-			String[] partes = linea.split(";");
-		}
-	}*/
-
-private static void leerPuertos() throws FileNotFoundException{
-		Scanner s = new Scanner(System.in);
-		File arch = new File("puertos.txt");
-		s = new Scanner(arch);
-		while (s.hasNextLine()) {
-			String linea = s.nextLine();
-			String[] partes = linea.split("|");
-		}
+	//muestra el total de puertos que se encuentran vulnerables al estar abiertos
+	private static void verTotalPuertosAbiertos() {
+	  ArrayList<PC> pcs = cargarPCs();
+	  ArrayList<Puerto> puertos = cargarPuertos(pcs);
+	  ArrayList<Vulnerabilidad> vulnerabilidades = cargarVulnerabilidades();
+	  asociarVulnerabilidades(puertos, vulnerabilidades);
+	  
+	  int total = 0;
+	  System.out.println("\n--- Puertos abiertos en la red ---");
+	  
+	  for (PC pc : pcs)
+	  {
+	      //se obtienen los puertos abiertos asociados a los pcs del sistema
+	      for (Puerto puerto : pc.getPuertos())
+	      {
+	          if (puerto.estaAbierto())
+	          {
+	              total++; //se cuenta el puerto abierto
+	              System.out.println("--> Pc: " + pc.getId() + " - Puerto: " + puerto.getNumero());
+	          
+	              //se obtienen las vulnerabilidades asociadas a los puertos abiertos
+	              for (Vulnerabilidad vulnerabilidad : puerto.getVulnerabilidades())
+	              {
+	                  System.out.println("--> Vulnerabilidad: " + vulnerabilidad.getNombre());
+	                  
+	              }
+	              
+	          }
+	          
+	      }
+	      
+	  }
+	  System.out.println("Cantidad total de puertos abiertos: " + total);
 	}
-
-private static void leerPcs() throws FileNotFoundException {
-		Scanner s = new Scanner(System.in);
-		File arch = new File("pcs.txt");
-		s = new Scanner(arch);
-		while (s.hasNextLine()) {
-			String linea = s.nextLine();
-			String[] partes = linea.split("|");
-		}	
+	
+	//ordena los pcs registrados en el sistema por categoria de su ip
+	private static void ordenarPCsPorIp() {
+	  ArrayList<PC> pcs = cargarPCs();
+	  ArrayList<PC> claseA = new ArrayList<>();
+	  ArrayList<PC> claseB = new ArrayList<>();
+	  ArrayList<PC> claseC = new ArrayList<>();
+	  ArrayList<PC> otraClase = new ArrayList<>();
+	  
+	  //se obtienen las clases de cada direccion de los pcs registrados en el sistema 
+	  for (PC pc : pcs)
+	  {
+	      String clase = pc.obtenerClaseIp();
+	      if (clase.equals("Clase A"))
+	      {
+	          claseA.add(pc);
+	      } else if (clase.equals("Clase B"))
+	      {
+	          claseB.add(pc);
+	      } else if (clase.equals("Clase C"))
+	      {
+	          claseC.add(pc);
+	      } else {
+	          otraClase.add(pc);
+	      }
+	      
+	  } 
+	  System.out.println("\n--- Pcs clase A ---");
+	  for (PC pc : claseA)
+	  {
+	      System.out.println(pc.getId());
+	  }
+	  
+	  System.out.println("\n--- Pcs clase B ---");
+	  for (PC pc : claseB)
+	  {
+	      System.out.println(pc.getId());
+	  }
+	  
+	  System.out.println("\n--- Pcs clase C ---");
+	  for (PC pc : claseC)
+	  {
+	      System.out.println(pc.getId());
+	  }
+	  
+	  if (!otraClase.isEmpty()) {
+	      System.out.println("\n--- Pcs de otras clases ---");
+	      for (PC pc : otraClase)
+	      {
+	          System.out.println(pc.getId());
+	      }    
+	  }
 	}
-
 }
+	

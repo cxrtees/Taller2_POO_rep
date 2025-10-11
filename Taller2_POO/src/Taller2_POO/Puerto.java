@@ -16,6 +16,7 @@ public class Puerto {
 		this.vulnerabilidades = new ArrayList<>();
 	}
 	
+	//getters
 	public int getNumero()
 	{
 		return numero;
@@ -36,11 +37,13 @@ public class Puerto {
 		return vulnerabilidades;
 	}
 	
+	//metodo para ver si un puerto esta abierto
 	public boolean estaAbierto()
 	{
 		return "Abierto".equalsIgnoreCase(estado);
 	}
 	
+	//metodo para guardar las vulnerabilidades asociadas al puerto
 	public void agregarVulnerabilidad(Vulnerabilidad vulnerabilidad)
 	{
 		vulnerabilidades.add(vulnerabilidad);
