@@ -110,6 +110,7 @@ public class PC {
 		System.out.println("-> Id: " + id);
 		System.out.println("-> Ip: " + ip);
 		System.out.println("-> So: " + so);
+		System.out.println("-> Nivel de riesgo: " + calcularNivelRiesgo());
 		System.out.println("-> Puertos: ");
 		
 		if (puertos.isEmpty())

@@ -404,19 +404,36 @@ public class Main {
 			
 		}
 	
-		System.out.println("\n--- Riesgo Alto ---");
-		for (PC pc : riesgoAlto)
+		if (!riesgoAlto.isEmpty())
 		{
-			System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+			System.out.println("\n--- Riesgo Alto ---");
+			for (PC pc : riesgoAlto)
+			{
+				System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+			}
+		} else 
+		{
+			System.out.println("\n--- Riesgo Alto ---");
+			System.out.println("... sin registros ...");
 		}
 		
-		System.out.println("\n--- Riesgo Medio ---");
-		for (PC pc : riesgoMedio)
+		
+		if (!riesgoMedio.isEmpty())
 		{
-			System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+			System.out.println("\n--- Riesgo Medio ---");
+			for (PC pc : riesgoMedio)
+			{
+				System.out.println("-->" + pc.getId() + " - " + pc.getIp() + " - Cantidad de vulnerabilidades: " + pc.contarVulnerabilidades());
+			}
+		} else
+		{
+			System.out.println("\n--- Riesgo Medio ---");
+			System.out.println("... sin registros ...");
 		}
 		
-		if (!riesgoBajo.isEmpty()) {
+		
+		if (!riesgoBajo.isEmpty())
+		{
 			System.out.println("\n--- Riesgo Bajo ---");
 			for (PC pc : riesgoBajo)
 			{
@@ -753,6 +770,11 @@ public class Main {
 	          
 	      }
 	      
+	  }
+	  
+	  if (total == 0)
+	  {
+		System.out.println("no se encontraron puertos abiertos en la red");
 	  }
 	  System.out.println("Cantidad total de puertos abiertos: " + total);
 	}
