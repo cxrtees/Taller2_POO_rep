@@ -26,9 +26,9 @@ public class Main {
 
         do {
             System.out.println("\n=== LOGIN SECURENET ===");
-            System.out.print("Usuario: ");
+            System.out.println("Usuario: ");
             String user = sc.nextLine();
-            System.out.print("Contraseña: ");
+            System.out.println("Contraseña: ");
             String pass = sc.nextLine();
 
             
@@ -452,6 +452,69 @@ public class Main {
 		String so = sc.nextLine().trim();
 		
 		PC nuevoPC = new PC(id, ip, so);
+		
+	
+		boolean opcion = false;
+		while (!opcion)
+		{
+			System.out.println("Quiere agregar puertos al pc? (s/n): ");
+			String respuesta = sc.nextLine().trim().toLowerCase(); //en caso de mayusculas 
+			
+			if (respuesta.equals("s") || respuesta.equals("si"))
+			{
+				opcion = true;
+				boolean agregarPuertos = true;
+				
+				while (agregarPuertos) {
+					System.out.println("Ingrese el numero del puerto: ");
+					int numPuerto;
+					
+					try
+					{
+						numPuerto = Integer.parseInt(sc.nextLine().trim());
+						
+					} catch (NumberFormatException e)
+					{
+						System.out.println("Error, numero de puerto ingresado incorrecto");
+						continue;
+					}
+					
+					System.out.println("Estado del puerto (abierto/cerrado): ");
+					String estado = sc.nextLine().trim().toLowerCase();
+					
+					//validacion de estado
+					if (!estado.equals("abierto") && !estado.equals("cerrado"))
+					{
+						System.out.println("Opcion ingresada incorrecta, use (abierto) o (cerrado)");
+						continue;
+					}
+					
+					//crear y agregar puerto al pc
+					Puerto puerto = new Puerto(numPuerto,estado,nuevoPC);
+					nuevoPC.agregarPuerto(puerto);
+					
+					System.out.println("Puerto " + numPuerto + " agregado correctamente! ");
+					
+					System.out.println("Quiere agregar otro puerto? (s/n): ");
+					String continuar = sc.nextLine().trim().toLowerCase();
+					if (!continuar.equals("s") && !continuar.equals("si"))
+					{
+						agregarPuertos = false; //para salir
+					}
+				}
+				
+				//registrar los puertos asociados al pc en puertos.txt
+				guardarPuertos(nuevoPC);	
+			}
+			else if (respuesta.equals("n") || respuesta.equals("no"))
+			{
+				opcion = true;
+				System.out.println("no se agregaron puertos...");
+			} else 
+			{
+				System.out.println("Error opcion ingresada invalida");
+			}
+		}
 		pcs.add(nuevoPC);
 		
 		//agregar el pc registrado al sistema actualizando el archivo pcs.txt 
@@ -461,6 +524,24 @@ public class Main {
 	}
 	
 	
+	private static void guardarPuertos(PC pc)
+	{
+		try
+		{
+			FileWriter writer = new FileWriter("puertos.txt", true);
+			for (Puerto puerto : pc.getPuertos())
+			{
+				String linea = pc.getId() + "|" + puerto.getNumero() + "|" + puerto.getEstado();
+				writer.write(linea + "\n");
+			}
+			writer.close();
+		} catch (Exception e) {
+			System.out.println("Error al guardar el archivo puertos ->" + e.getMessage());
+		}
+		
+	}
+
+
 	//elimina el pc buscado por el id del sistema
 	private static void eliminarPC(Scanner sc) {
 		ArrayList<PC> pcs = cargarPCs();
@@ -485,6 +566,10 @@ public class Main {
 			pcs.remove(pcAEliminar);
 			//guardar la lista de pcs actualizada en pcs.txt
 			guardarPCs(pcs);
+			
+			//eliminar puertos asociados al pc
+			eliminarPuertos(id);
+			
 			System.out.println("Pc ha sido eliminado correctamente!");
 		} else {
 			System.out.println("No se ha encontrado el Pc con el Id: " + id);
@@ -493,6 +578,36 @@ public class Main {
 	}
 	
 	
+	private static void eliminarPuertos(String idPc) {
+		try {
+			ArrayList<PC> pcs = cargarPCs();
+			ArrayList<Puerto> puertos = cargarPuertos(pcs);
+			
+			//se filtran los puertos para dejar los que no estan asociados al pc eliminado
+			ArrayList<Puerto> puertosRestantes = new ArrayList<>();
+			for (Puerto puerto : puertos)
+			{
+				if (!puerto.getPcAsociado().getId().equals(idPc))
+				{
+					puertosRestantes.add(puerto);
+				}
+			}
+			
+			//actualizar puertos.txt para quitar los puertos eliminados
+			FileWriter writer = new FileWriter("puertos.txt");
+			for (Puerto puerto : puertosRestantes)
+			{
+				String linea = puerto.getPcAsociado().getId() + "|" + puerto.getNumero() + "|" + puerto.getEstado();
+				writer.write(linea + "\n" );
+			}
+			writer.close();
+		} catch (Exception e) {
+			System.out.println("Error al eliminar puertos: " + e.getMessage());
+		}
+		
+	}
+
+
 	//actualiza el archivo pcs.txt cuando se agrega o elimina un pc del sistema 
 	public static void guardarPCs(ArrayList<PC> pcs)
 	{
@@ -577,6 +692,13 @@ public class Main {
 		{
 			//se crea objeto escaneo con el formato del registro para escribirlo en reportes.txt
 			Escaner escaneo = new Escaner(pcEscaneado, usuarioLogueado, new Date());
+			
+			//se imprime el reporte por consola antes de guardarlo en el txt
+			System.out.println("==========================\n");
+			String reporte = escaneo.generarReporte();
+			System.out.println(reporte);
+			System.out.println("==========================\n");
+			
 			guardarReporte(escaneo);
 			System.out.println("escaneo guardado en reportes.txt");
 			

@@ -111,19 +111,30 @@ public class PC {
 		System.out.println("-> Ip: " + ip);
 		System.out.println("-> So: " + so);
 		System.out.println("-> Puertos: ");
-		for (Puerto puerto : puertos) {
-			System.out.println("-- Puerto " + puerto.getNumero() + ": " + puerto.getEstado());
+		
+		if (puertos.isEmpty())
+		{
+			System.out.println("-- no hay puertos asociados a este pc");
 			
-			if (puerto.estaAbierto() && !puerto.getVulnerabilidades().isEmpty()) //muestra las vulnerabilidades de los puertos abiertos 
-			{
-				System.out.println("-- Vulnerabilidades: ");
-				for (Vulnerabilidad vulnerabilidad : puerto.getVulnerabilidades())
+		} else
+		{
+		
+			for (Puerto puerto : puertos) {
+				System.out.println("-- Puerto " + puerto.getNumero() + ": " + puerto.getEstado());
+				
+				if (puerto.estaAbierto() && !puerto.getVulnerabilidades().isEmpty()) //muestra las vulnerabilidades de los puertos abiertos 
 				{
-					System.out.println("--- * "+ vulnerabilidad.getNombre());
-					
-				}	
+					System.out.println("-- Vulnerabilidades: ");
+					for (Vulnerabilidad vulnerabilidad : puerto.getVulnerabilidades())
+					{
+						System.out.println("--- * "+ vulnerabilidad.getNombre());
+						
+					}	
+				}
 			}
-		}	
+			
+		}
+			
 	}
 	
 }
